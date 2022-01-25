@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 
 
-__version__ = 0.0
+__version__ = 0.1
 __author__ = 'Nicolas Palacio-Escat'
 
 class Application(tk.Frame):
@@ -19,9 +19,9 @@ class Application(tk.Frame):
         self.master.rowconfigure(1, weight=1)
 
         # Initial configuration
-        self.ncells = 50
-        self.xdim = 100
-        self.ydim = 100
+        self.ncells = 100
+        self.xdim = 50
+        self.ydim = 50
 
         header = tk.Label(self.master, text='CApy')
         header.grid(columnspan=2, row=0)
@@ -41,13 +41,16 @@ class Application(tk.Frame):
         self.new = tk.Button(self.master,  text='New', command=self.new_grid)
         self.new.grid(column=0, row=3, sticky='nsew')
 
-        self.status = 0
-        self.playpause = tk.Button(self.master,  text='Play', command=self.play)
+        self.playpause = tk.Button(self.master,  text='Play',
+                                   command=self.play)
         self.playpause.grid(column=1, row=3, sticky='nsew')
 
         self.new_grid()
 
     def new_grid(self):
+        self.running = False
+        self.playpause.configure(text='Play')
+
         self.grid = np.zeros([self.xdim, self.ydim], dtype=bool)
         choice = np.random.choice(self.xdim * self.ydim, size=self.ncells,
                                   replace=False)
@@ -60,13 +63,36 @@ class Application(tk.Frame):
         self.canvas.draw()
 
     def play(self):
-        if self.status == 0:
-            self.status = 1
-            self.playpause.configure(text='Pause')
+        if self.running:
+           self.running = False
+           self.playpause.configure(text='Play')
 
         else:
-            self.status = 0
-            self.playpause.configure(text='Play')
+            self.running = True
+            self.playpause.configure(text='Pause')
+            self.iterate()
+
+    def iterate(self):
+        if self.running:
+            self.evaluate()
+
+        self.master.after(1000, self.iterate)
+
+    def evaluate(self):
+        pad = np.pad(self.grid.astype(int), 1, 'wrap')
+        neighbors = (pad[1:-1, 2:] + pad[1:-1, :-2] + pad[2:, 1:-1]
+                     + pad[:-2, 1:-1] + pad[2:, 2:] + pad[2:, :-2]
+                     + pad[:-2, 2:] + pad[:-2, :-2])
+
+        # Conditions
+        alive = set(np.where(self.grid.flat)[0])
+        nis2 = set(np.where(neighbors.flat == 2)[0])
+        nis3 = set(np.where(neighbors.flat == 3)[0])
+
+        # Updating grid
+        np.put(self.grid, list(alive - (nis2 | nis3)), False)
+        np.put(self.grid, list(nis3 - alive), True)
+        self.update_grid()
 
 #==============================================================================#
 
