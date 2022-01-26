@@ -19,7 +19,7 @@ class Application(tk.Frame):
         self.master.rowconfigure(1, weight=1)
 
         # Initial configuration
-        self.ncells = 100
+        self.ncells = 1000
         self.xdim = 50
         self.ydim = 50
 
@@ -55,11 +55,15 @@ class Application(tk.Frame):
         choice = np.random.choice(self.xdim * self.ydim, size=self.ncells,
                                   replace=False)
         np.put(self.grid, choice, True)
+        self.step = 0
+
         self.update_grid()
 
     def update_grid(self):
+        self.ax.clear()
         self.ax.imshow(self.grid, interpolation=None, aspect='auto',
                        cmap='binary')
+        self.ax.set_title('Step %d' % self.step)
         self.canvas.draw()
 
     def play(self):
@@ -76,9 +80,10 @@ class Application(tk.Frame):
         if self.running:
             self.evaluate()
 
-        self.master.after(1000, self.iterate)
+        self.master.after(250, self.iterate)
 
     def evaluate(self):
+        self.step += 1
         pad = np.pad(self.grid.astype(int), 1, 'wrap')
         neighbors = (pad[1:-1, 2:] + pad[1:-1, :-2] + pad[2:, 1:-1]
                      + pad[:-2, 1:-1] + pad[2:, 2:] + pad[2:, :-2]
