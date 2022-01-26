@@ -7,6 +7,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 
+# TODO: Implement rules
+# TODO: Add speed parameter
 
 __version__ = 0.1
 __author__ = 'Nicolas Palacio-Escat'
@@ -26,23 +28,26 @@ class Application(tk.Frame):
         header.grid(columnspan=6, row=0)
 
         # Parameters
-        self.label_xdim = tk.Label(self.root, text='X size:')
+        self.label_xdim = tk.Label(self.root, text='X size: ', width=10,
+                                   anchor='e')
         self.label_xdim.grid(column=0, row=3, sticky='e')
-        self.xdim = tk.Entry(self.root, relief='ridge')
+        self.xdim = tk.Entry(self.root, relief='ridge', width=10)
         self.xdim.insert('end', '50')
-        self.xdim.grid(column=1, row=3)
+        self.xdim.grid(column=1, row=3, sticky='w')
 
-        self.label_ydim = tk.Label(self.root, text='Y size:')
+        self.label_ydim = tk.Label(self.root, text='Y size: ', width=10,
+                                   anchor='e')
         self.label_ydim.grid(column=2, row=3, sticky='e')
-        self.ydim = tk.Entry(self.root, relief='ridge')
+        self.ydim = tk.Entry(self.root, relief='ridge', width=10)
         self.ydim.insert('end', '50')
-        self.ydim.grid(column=3, row=3)
+        self.ydim.grid(column=3, row=3, sticky='w')
 
-        self.label_ncells = tk.Label(self.root, text='N cells:')
+        self.label_ncells = tk.Label(self.root, text='N cells: ', width=10,
+                                     anchor='e')
         self.label_ncells.grid(column=4, row=3, sticky='e')
-        self.ncells = tk.Entry(self.root, relief='ridge')
+        self.ncells = tk.Entry(self.root, relief='ridge', width=10)
         self.ncells.insert('end', '1000')
-        self.ncells.grid(column=5, row=3)
+        self.ncells.grid(column=5, row=3, sticky='w')
 
         # Buttons
         self.new = tk.Button(self.root,  text='New', command=self.new_canvas)
