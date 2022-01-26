@@ -43,16 +43,16 @@ class Application(tk.Frame):
         self.ncells.grid(column=5, row=3)
 
         # Buttons
-        self.new = tk.Button(self.root,  text='New', command=self.new_grid)
+        self.new = tk.Button(self.root,  text='New', command=self.new_canvas)
         self.new.grid(column=0, columnspan=3, row=4, sticky='nsew')
 
         self.playpause = tk.Button(self.root,  text='Play',
                                    command=self.play)
         self.playpause.grid(column=3, columnspan=3, row=4, sticky='nsew')
 
-        self.new_grid()
+        self.new_canvas()
 
-    def new_grid(self):
+    def new_canvas(self):
         # Stop running
         self.running = False
         self.playpause.configure(text='Play')
@@ -75,9 +75,9 @@ class Application(tk.Frame):
         np.put(self.matrix, choice, True)
         self.step = 0
 
-        self.update_grid()
+        self.update_canvas()
 
-    def update_grid(self):
+    def update_canvas(self):
         self.ax.clear()
         self.ax.imshow(self.matrix, interpolation=None, aspect='auto',
                        cmap='binary')
@@ -97,8 +97,7 @@ class Application(tk.Frame):
     def iterate(self):
         if self.running:
             self.evaluate()
-
-        self.root.after(250, self.iterate)
+            self.root.after(500, self.iterate)
 
     def evaluate(self):
         self.step += 1
@@ -115,7 +114,7 @@ class Application(tk.Frame):
         # Updating grid
         np.put(self.matrix, list(alive - (nis2 | nis3)), False)
         np.put(self.matrix, list(nis3 - alive), True)
-        self.update_grid()
+        self.update_canvas()
 
 #==============================================================================#
 
