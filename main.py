@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import tkinter as tk
 import numpy as np
 import matplotlib.pyplot as plt
@@ -118,7 +120,8 @@ class Application(tk.Frame):
 
 #==============================================================================#
 
-root = tk.Tk()
+if __name__ == '__main__':
+    root = tk.Tk()
 
-app = Application(root=root)
-app.mainloop()
+    app = Application(root=root)
+    app.mainloop()
