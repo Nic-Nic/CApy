@@ -11,7 +11,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
 # TODO: Defaults as class variables
-# TODO: Assert input variables
 
 
 class Application(tk.Frame):
@@ -40,7 +39,7 @@ class Application(tk.Frame):
         toolbar.grid(columnspan=6, row=2)
         self.canvas.get_tk_widget().grid(columnspan=6, row=1, sticky='nsew')
 
-        # Parameters
+        # Parameter entries
         self.label_xdim = tk.Label(self.root, text='X size: ', width=10,
                                    anchor='e')
         self.label_xdim.grid(column=0, row=3, sticky='e')
@@ -99,9 +98,21 @@ class Application(tk.Frame):
         self.running = False
         self.button_playpause.configure(text='Play')
 
-        # Set/update parameters
-        self.step = 0
-        #if
+        # Assert and set/update parameters
+        # Checking for non-integer values
+        try:
+            assert self.entry_xdim.get().isnumeric()
+            assert self.entry_ydim.get().isnumeric()
+            assert self.entry_ncells.get().isnumeric()
+            assert self.entry_rule_b.get().isnumeric()
+            assert self.entry_rule_s.get().isnumeric()
+            assert self.entry_speed.get().isnumeric()
+
+        except AssertionError:
+            msg = 'Some of the parameters provided are not integers!'
+
+            return tk.messagebox.showerror(title='Input error', message=msg)
+
         self.xdim = int(self.entry_xdim.get())
         self.ydim = int(self.entry_ydim.get())
         self.ncells = int(self.entry_ncells.get())
@@ -109,7 +120,18 @@ class Application(tk.Frame):
         self.rule_s = set(int(i) for i in self.entry_rule_s.get())
         self.speed = int(self.entry_speed.get())
 
+        # Checking for valid parameter values
+        if self.ncells > self.xdim * self.ydim:
+            msg = 'Number of cells exceeds the available grid space!'
+
+            return tk.messagebox.showerror(title='Input error', message=msg)
+
+        if 9 in self.rule_s | self.rule_b:
+            msg = 'Moore\'s neighbourhood cannot be greater than 8!'
+            tk.messagebox.showwarning(title='Please note', message=msg)
+
         # Generating initial conditions
+        self.step = 0
         self.matrix = np.zeros([self.ydim, self.xdim], dtype=bool)
         choice = np.random.choice(self.xdim * self.ydim, size=self.ncells,
                                   replace=False)
@@ -121,7 +143,7 @@ class Application(tk.Frame):
         self.header.set('Step %d' % self.step)
         self.ax.clear()
         self.ax.imshow(self.matrix, interpolation=None, aspect='auto',
-                       cmap='binary')
+                       cmap='binary', vmin=0, vmax=1)
         self.canvas.draw()
 
     def playpause(self):
