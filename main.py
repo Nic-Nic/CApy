@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__version__ = 0.1
+__version__ = 0.2
 __author__ = 'Nicolas Palacio-Escat'
 
 import tkinter as tk
@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
-# TODO: Header is step
 # TODO: Defaults as class variables
 # TODO: Assert input variables
+
 
 class Application(tk.Frame):
     def __init__(self, root=None, **options):
@@ -25,8 +25,20 @@ class Application(tk.Frame):
         for i in range(6):
             self.root.columnconfigure(i, weight=1)
 
-        header = tk.Label(self.root, text='CApy')
-        header.grid(columnspan=6, row=0)
+        self.header = tk.StringVar(master=self.root, value='Step 0')
+        self.label_header = tk.Label(self.root, textvariable=self.header)
+        self.label_header.grid(columnspan=6, row=0)
+
+        # Generate figure and canvas with toolbar
+        self.fig, self.ax = plt.subplots()
+        self.fig.tight_layout()
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
+        toolbar = NavigationToolbar2Tk(self.canvas, self.root,
+                                       pack_toolbar=False)
+        toolbar.update()
+        toolbar.grid(columnspan=6, row=2)
+        self.canvas.get_tk_widget().grid(columnspan=6, row=1, sticky='nsew')
 
         # Parameters
         self.label_xdim = tk.Label(self.root, text='X size: ', width=10,
@@ -73,33 +85,23 @@ class Application(tk.Frame):
 
         # Buttons
         self.button_new = tk.Button(self.root,  text='New',
-                                    command=self.new_canvas)
+                                    command=self.new_setup)
         self.button_new.grid(column=0, columnspan=3, row=5, sticky='nsew')
 
         self.button_playpause = tk.Button(self.root,  text='Play',
                                           command=self.playpause)
         self.button_playpause.grid(column=3, columnspan=3, row=5, sticky='nsew')
 
-        self.new_canvas()
+        self.new_setup()
 
-    def new_canvas(self):
+    def new_setup(self):
         # Stop running
         self.running = False
         self.button_playpause.configure(text='Play')
 
-        # Generate figure and canvas with toolbar
-        self.fig, self.ax = plt.subplots()
-        self.fig.tight_layout()
-
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        toolbar = NavigationToolbar2Tk(self.canvas, self.root,
-                                       pack_toolbar=False)
-        toolbar.update()
-        toolbar.grid(columnspan=6, row=2)
-        self.canvas.get_tk_widget().grid(columnspan=6, row=1, sticky='nsew')
-
         # Set/update parameters
         self.step = 0
+        #if
         self.xdim = int(self.entry_xdim.get())
         self.ydim = int(self.entry_ydim.get())
         self.ncells = int(self.entry_ncells.get())
@@ -116,10 +118,10 @@ class Application(tk.Frame):
         self.update_canvas()
 
     def update_canvas(self):
+        self.header.set('Step %d' % self.step)
         self.ax.clear()
         self.ax.imshow(self.matrix, interpolation=None, aspect='auto',
                        cmap='binary')
-        self.ax.set_title('Step %d' % self.step)
         self.canvas.draw()
 
     def playpause(self):
@@ -155,6 +157,7 @@ class Application(tk.Frame):
         np.put(self.matrix, list(born - alive), True)
 
         self.update_canvas()
+
 
 #==============================================================================#
 
