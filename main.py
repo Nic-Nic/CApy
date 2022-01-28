@@ -106,8 +106,10 @@ class Application(tk.Frame):
             assert self.entry_xdim.get().isnumeric()
             assert self.entry_ydim.get().isnumeric()
             assert self.entry_ncells.get().isnumeric()
-            assert self.entry_rule_b.get().isnumeric()
-            assert self.entry_rule_s.get().isnumeric()
+            assert self.entry_rule_b.get().isnumeric() \
+                    or not self.entry_rule_b.get()
+            assert self.entry_rule_s.get().isnumeric() \
+                    or not self.entry_rule_s.get()
             assert self.entry_speed.get().isnumeric()
 
         except AssertionError:
@@ -168,17 +170,17 @@ class Application(tk.Frame):
         pad = np.pad(self.matrix.astype(np.uint8), 1, 'wrap')
         neighbors = (pad[1:-1, 2:] + pad[1:-1, :-2] + pad[2:, 1:-1]
                      + pad[:-2, 1:-1] + pad[2:, 2:] + pad[2:, :-2]
-                     + pad[:-2, 2:] + pad[:-2, :-2]).flatten()
-        alive = set(np.where(self.matrix.flat)[0])
+                     + pad[:-2, 2:] + pad[:-2, :-2])
+        alive = self.matrix.copy()
 
         # Applying conditions
-        survive = reduce(set.union, [set(np.where(neighbors == i)[0]) for i in \
-                      self.rule_s]) if self.rule_s else set()
-        born = reduce(set.union, [set(np.where(neighbors == i)[0]) for i in \
-                   self.rule_b]) if self.rule_b else set()
+        survive = reduce(np.logical_or, [neighbors == i for i in self.rule_s]) \
+                      if self.rule_s else np.zeros(neighbors.shape, dtype=bool)
+        born = reduce(np.logical_or, [neighbors == i for i in self.rule_b]) if \
+                   self.rule_b else np.zeros(neighbors.shape, dtype=bool)
 
-        np.put(self.matrix, list(alive - survive), False)
-        np.put(self.matrix, list(born - alive), True)
+        np.putmask(self.matrix, alive & ~survive, False)
+        np.putmask(self.matrix, born & ~alive, True)
 
         self.update_canvas()
 
