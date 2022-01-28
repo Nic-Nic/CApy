@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__version__ = 0.2
+__version__ = 0.3
 __author__ = 'Nicolas Palacio-Escat'
 
 import tkinter as tk
@@ -12,7 +12,6 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
 # TODO: Defaults as class variables
 # TODO: Add menus
-# FIX: Substitute np.where for something more efficient
 
 
 class Application(tk.Frame):
