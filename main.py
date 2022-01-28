@@ -11,6 +11,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
 # TODO: Defaults as class variables
+# TODO: Add menus
+# FIX: Substitute np.where for something more efficient
 
 
 class Application(tk.Frame):
@@ -163,7 +165,7 @@ class Application(tk.Frame):
 
     def evaluate(self):
         self.step += 1
-        pad = np.pad(self.matrix.astype(int), 1, 'wrap')
+        pad = np.pad(self.matrix.astype(np.uint8), 1, 'wrap')
         neighbors = (pad[1:-1, 2:] + pad[1:-1, :-2] + pad[2:, 1:-1]
                      + pad[:-2, 1:-1] + pad[2:, 2:] + pad[2:, :-2]
                      + pad[:-2, 2:] + pad[:-2, :-2]).flatten()
