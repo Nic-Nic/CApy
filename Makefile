@@ -4,7 +4,7 @@ FLAGS = --onefile \
 		--clean \
 		--distpath=./ \
 		--name=CApy_v$(VER) \
-		--icon=capy.ico
+		--icon=img/capy.ico
 
 all: compile clean
 

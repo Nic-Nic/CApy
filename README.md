@@ -1,4 +1,4 @@
-# CApy ![icon](capy.ico)
+# CApy ![CApy icon](img/capy.ico)
 
 CApy is a 2D Cellular Automata fully implemented in Python based on Conway's
 Game of Life.
@@ -17,6 +17,8 @@ in the [releases](https://github.com/Nic-Nic/CApy/releases/latest) page
 (currently only for Linux). Note that if you are running from the Python
 interpreter, you need to install the required [dependencies](#dependencies).
 
+![Interface example](img/interface.png)
+
 The interface of CApy is pretty straightforward. First there is the graph space
 where the status of the CA is shown. Black cells are "alive" or "on" while the
 white ones represent "dead" cells or "off" state. The current iteration step is
@@ -34,7 +36,25 @@ if it is currently running).
 
 ## Rules
 
-TODO
+CA rules are defined by a list of digits between zero to eight. Each digit
+determines the number of alive neighbors of a given cell (Moore's neighborhood)
+where the rule applies. There are two main rules governing the behavior of the
+CA:
+
+- Birth (B): Dead cells that fulfill the given rule, will become alive in the
+  next iteration, otherwise they remain dead.
+- Survival (S): Alive cells that fulfill the given rule will keep on living in
+  the next iteration, they will die otherwise.
+
+Therefore, for instance, Conway's Game of Life rules are B3/S23, which means:
+
+- Any dead cell surrounded by exactly three neighbors will become alive.
+- Any alive cell surrounded by either two or three neighbors will survive,
+  otherwise will die.
+
+Note that there can be empty rules, for example B/S012345678 will produce a
+static CA where cells with any number of neighbors survive but no new cells will
+be generated (birth rule is empty).
 
 ## Dependencies
 
