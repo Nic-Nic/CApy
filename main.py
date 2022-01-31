@@ -10,11 +10,19 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
-# TODO: Defaults as class variables
 # TODO: Add menus
 
 
 class Application(tk.Frame):
+    init_running = False
+    init_step = 0
+    init_xdim = 50
+    init_ydim = 50
+    init_ncells = 1000
+    init_rule_b = 3
+    init_rule_s = 23
+    init_speed = 500
+
     def __init__(self, root=None, **options):
         super().__init__(root)
         self.root = root
@@ -25,7 +33,8 @@ class Application(tk.Frame):
         for i in range(6):
             self.root.columnconfigure(i, weight=1)
 
-        self.header = tk.StringVar(master=self.root, value='Step 0')
+        self.header = tk.StringVar(master=self.root,
+                                   value='Step %d' % Application.init_step)
         self.label_header = tk.Label(self.root, textvariable=self.header)
         self.label_header.grid(columnspan=6, row=0)
 
@@ -45,42 +54,42 @@ class Application(tk.Frame):
                                    anchor='e')
         self.label_xdim.grid(column=0, row=3, sticky='e')
         self.entry_xdim = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_xdim.insert('end', '50')
+        self.entry_xdim.insert('end', Application.init_xdim)
         self.entry_xdim.grid(column=1, row=3, sticky='w')
 
         self.label_ydim = tk.Label(self.root, text='Y size: ', width=10,
                                    anchor='e')
         self.label_ydim.grid(column=2, row=3, sticky='e')
         self.entry_ydim = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_ydim.insert('end', '50')
+        self.entry_ydim.insert('end', Application.init_ydim)
         self.entry_ydim.grid(column=3, row=3, sticky='w')
 
         self.label_ncells = tk.Label(self.root, text='N cells: ', width=10,
                                      anchor='e')
         self.label_ncells.grid(column=4, row=3, sticky='e')
         self.entry_ncells = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_ncells.insert('end', '1000')
+        self.entry_ncells.insert('end', Application.init_ncells)
         self.entry_ncells.grid(column=5, row=3, sticky='w')
 
         self.label_rule_b = tk.Label(self.root, text='B rule: ', width=10,
                                      anchor='e')
         self.label_rule_b.grid(column=0, row=4, sticky='e')
         self.entry_rule_b = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_rule_b.insert('end', '3')
+        self.entry_rule_b.insert('end', Application.init_rule_b)
         self.entry_rule_b.grid(column=1, row=4, sticky='w')
 
         self.label_rule_s = tk.Label(self.root, text='S rule: ', width=10,
                                      anchor='e')
         self.label_rule_s.grid(column=2, row=4, sticky='e')
         self.entry_rule_s = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_rule_s.insert('end', '23')
+        self.entry_rule_s.insert('end', Application.init_rule_s)
         self.entry_rule_s.grid(column=3, row=4, sticky='w')
 
         self.label_speed = tk.Label(self.root, text='Speed (ms): ', width=10,
                                      anchor='e')
         self.label_speed.grid(column=4, row=4, sticky='e')
         self.entry_speed = tk.Entry(self.root, relief='ridge', width=10)
-        self.entry_speed.insert('end', '500')
+        self.entry_speed.insert('end', Application.init_speed)
         self.entry_speed.grid(column=5, row=4, sticky='w')
 
         # Buttons
@@ -96,7 +105,7 @@ class Application(tk.Frame):
 
     def new_setup(self):
         # Stop running
-        self.running = False
+        self.running = Application.init_running
         self.button_playpause.configure(text='Play')
 
         # Assert and set/update parameters
@@ -134,7 +143,7 @@ class Application(tk.Frame):
             tk.messagebox.showwarning(title='Please note', message=msg)
 
         # Generating initial conditions
-        self.step = 0
+        self.step = Application.init_step
         self.matrix = np.zeros([self.ydim, self.xdim], dtype=bool)
         choice = np.random.choice(self.xdim * self.ydim, size=self.ncells,
                                   replace=False)
